@@ -24,6 +24,8 @@ let select = Select
 
 let call x = Call x
 let call_indirect x = CallIndirect x
+let return_call x = ReturnCall x
+let return_call_indirect x = ReturnCallIndirect x
 
 let get_local x = GetLocal x
 let set_local x = SetLocal x

@@ -47,6 +47,9 @@ and admin_instr' =
   | Label of stack_type * instr list * value stack * admin_instr list
   | Local of instance * value ref list * value stack * admin_instr list
   | Invoke of closure
+  | BreakTail of int32 * admin_instr list
+  | PopTail of admin_instr list
+  | InvokeTail of closure
 
 type config =
 {
@@ -109,10 +112,17 @@ let drop n (vs : 'a stack) at =
  *)
 
 let rec step (inst : instance) (c : config) : config =
+  (*
+  print_endline ("step - budget: " ^ (string_of_int c.budget) ^ " depth:" ^ (string_of_int c.depth));
+  *)
   let e = List.hd c.instrs in
   let vs', es' =
     match e.it, c.values with
     | Plain e', vs ->
+      (*
+      Print.instr stdout 40 (e' @@ e.at);
+      let _ = List.map (fun x -> print_endline (string_of_value x);) c.values in
+      *)
       (match e', vs with
       | Unreachable, vs ->
         vs, [Trapped "unreachable executed" @@ e.at]
@@ -158,6 +168,15 @@ let rec step (inst : instance) (c : config) : config =
         if (type_ inst x).it <> func_type_of clos then
           Trap.error e.at "indirect call signature mismatch";
         vs, [Invoke clos @@ e.at]
+
+      | ReturnCall x, vs ->
+        vs, [InvokeTail (func inst x) @@ e.at]
+
+      | ReturnCallIndirect x, I32 i :: vs ->
+        let clos = func_elem inst (0l @@ e.at) i e.at in
+        if (type_ inst x).it <> func_type_of clos then
+          Trap.error e.at "indirect tail call signature mismatch";
+        vs, [InvokeTail clos @@ e.at]
 
       | Drop, v :: vs' ->
         vs', []
@@ -256,6 +275,12 @@ let rec step (inst : instance) (c : config) : config =
     | Break (k, vs'), vs ->
       Crash.error e.at "undefined label"
 
+    | BreakTail (k, es'') ,vs ->
+      Crash.error e.at "undefined label"
+
+    | PopTail es'', vs ->
+      Crash.error e.at "not in a stack frame"
+
     | Label (ts, es0, vs', []), vs ->
       vs' @ vs, []
 
@@ -268,6 +293,12 @@ let rec step (inst : instance) (c : config) : config =
     | Label (ts, es0, vs', {it = Break (k, vs0); at} :: es'), vs ->
       vs, [Break (Int32.sub k 1l, vs0) @@ at]
 
+    | Label (ts, es0, vs', {it = BreakTail (0l, es''); at} :: es'), vs ->
+      vs, [PopTail es'' @@ at]
+
+    | Label (ts, es0, vs', {it = BreakTail (k, es''); at} :: es'), vs ->
+      vs, [BreakTail (Int32.sub k 1l, es'') @@ at]
+
     | Label (ts, es0, values, instrs), vs ->
       let c' = step inst {c with values; instrs; depth = c.depth + 1} in
       vs, [Label (ts, es0, c'.values, c'.instrs) @@ e.at]
@@ -277,6 +308,9 @@ let rec step (inst : instance) (c : config) : config =
 
     | Local (inst', locals, vs', {it = Trapped msg; at} :: es'), vs ->
       vs, [Trapped msg @@ at]
+
+    | Local (inst', locals, vs', {it = PopTail es''; at} :: es'), vs ->
+      vs, es''
 
     | Local (inst', locals, values, instrs), vs ->
       let c' = step inst' {locals; values; instrs; depth = 0; budget = c.budget - 1} in
@@ -296,6 +330,24 @@ let rec step (inst : instance) (c : config) : config =
         vs', [Local (!inst', List.map ref locals', [], instrs') @@ e.at]
 
       | HostFunc (t, f) ->
+        try List.rev (f (List.rev args)) @ vs', []
+        with Crash (_, msg) -> Crash.error e.at msg
+      )
+
+    | InvokeTail clos, vs when c.budget = 0 ->
+      Exhaustion.error e.at "call stack exhausted"
+
+    | InvokeTail clos, vs ->
+      let FuncType (ins, out) = func_type_of clos in
+      let n = List.length ins in
+      let args, vs' = take n vs e.at, drop n vs e.at in
+      (match clos with
+      | AstFunc (inst', f) ->
+        let locals' = List.rev args @ List.map default_value f.it.locals in
+        let instrs' = [Plain (Block (out, f.it.body)) @@ f.at] in
+        vs', [BreakTail (Int32.of_int (c.depth - 1), [Local (!inst', List.map ref locals', [], instrs') @@ e.at]) @@ e.at]
+      | HostFunc (t, f) ->
+        (* TODO change this to actually do tail recursion *)
         try List.rev (f (List.rev args)) @ vs', []
         with Crash (_, msg) -> Crash.error e.at msg
       )

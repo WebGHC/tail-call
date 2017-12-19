@@ -211,6 +211,8 @@ op:
   return
   call <var>
   call_indirect <var>
+  return_call <var>
+  return_call_indirect <var>
   drop
   select
   get_local <var>
