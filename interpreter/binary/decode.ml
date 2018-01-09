@@ -154,7 +154,11 @@ let func_type s =
   | -0x20 ->
     let ins = vec value_type s in
     let out = vec value_type s in
-    FuncType (ins, out)
+    FuncType (RegularFuncAnnotation, ins, out)
+  | -0x21 ->
+    let ins = vec value_type s in
+    let out = vec value_type s in
+    FuncType (TailCallFuncAnnotation, ins, out)
   | _ -> error s (pos s - 1) "invalid function type"
 
 let limits vu s =

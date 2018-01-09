@@ -3,7 +3,8 @@
 type value_type = I32Type | I64Type | F32Type | F64Type
 type elem_type = AnyFuncType
 type stack_type = value_type list
-type func_type = FuncType of stack_type * stack_type
+type func_annotation = RegularFuncAnnotation | TailCallFuncAnnotation
+type func_type = FuncType of func_annotation * stack_type * stack_type
 
 type 'a limits = {min : 'a; max : 'a option}
 type mutability = Immutable | Mutable
@@ -79,5 +80,12 @@ let string_of_global_type = function
 let string_of_stack_type ts =
   "[" ^ String.concat " " (List.map string_of_value_type ts) ^ "]"
 
-let string_of_func_type (FuncType (ins, out)) =
-  string_of_stack_type ins ^ " -> " ^ string_of_stack_type out
+let string_of_func_annotation = function
+  | RegularFuncAnnotation -> ""
+  | TailCallFuncAnnotation -> "(tail call) "
+
+let string_of_func_type (FuncType (ann, ins, out)) =
+  string_of_func_annotation ann ^
+  string_of_stack_type ins ^
+  " -> " ^
+  string_of_stack_type out

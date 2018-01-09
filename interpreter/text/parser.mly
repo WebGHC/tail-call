@@ -139,7 +139,7 @@ let inline_type (c : context) ft at =
   | None -> anon_type c (ft @@ at) @@ at
 
 let inline_type_explicit (c : context) x ft at =
-  if ft <> FuncType ([], []) && ft <> func_type c x then
+  if ft <> FuncType (RegularFuncAnnotation, [], []) && ft <> func_type c x then
     error at "inline function type does not match explicit type";
   x
 
@@ -152,7 +152,7 @@ let inline_type_explicit (c : context) x ft at =
 %token LOAD STORE OFFSET_EQ_NAT ALIGN_EQ_NAT
 %token CONST UNARY BINARY TEST COMPARE CONVERT
 %token UNREACHABLE CURRENT_MEMORY GROW_MEMORY
-%token FUNC START TYPE PARAM RESULT LOCAL GLOBAL
+%token FUNC TAIL_CALL START TYPE PARAM RESULT LOCAL GLOBAL
 %token TABLE ELEM MEMORY DATA OFFSET IMPORT EXPORT TABLE
 %token MODULE BIN QUOTE
 %token SCRIPT REGISTER INVOKE GET
@@ -216,15 +216,19 @@ func_type :
 
 func_sig :
   | /* empty */
-    { FuncType ([], []) }
+    { FuncType (RegularFuncAnnotation, [], []) }
   | LPAR RESULT value_type_list RPAR func_sig
-    { let FuncType (ins, out) = $5 in
+    { let FuncType (ann, ins, out) = $5 in
       if ins <> [] then error (at ()) "result before parameter";
-      FuncType (ins, $3 @ out) }
+      FuncType (ann, ins, $3 @ out) }
   | LPAR PARAM value_type_list RPAR func_sig
-    { let FuncType (ins, out) = $5 in FuncType ($3 @ ins, out) }
+    { let FuncType (ann, ins, out) = $5 in FuncType (ann, $3 @ ins, out) }
   | LPAR PARAM bind_var VALUE_TYPE RPAR func_sig  /* Sugar */
-    { let FuncType (ins, out) = $6 in FuncType ($4 :: ins, out) }
+    { let FuncType (ann, ins, out) = $6 in FuncType (ann, $4 :: ins, out) }
+  | LPAR TAIL_CALL RPAR func_sig
+    { let FuncType (_, ins, out) = $4 in
+      if ins <> [] then error (at ()) "parameter before tail-call";
+      FuncType (TailCallFuncAnnotation, ins, out) }
 
 table_sig :
   | limits elem_type { TableType ($1, $2) }
@@ -394,11 +398,11 @@ func :
       fun c -> let x = $3 c anon_func bind_func @@ at in fun () -> $4 c x at }
 
 func_fields :
-  | type_use func_fields_body
+  | type_use func_ann_body
     { fun c x at ->
       let t = inline_type_explicit c ($1 c type_) (fst $2) at in
       [{(snd $2 (enter_func c)) with ftype = t} @@ at], [], [] }
-  | func_fields_body  /* Sugar */
+  | func_ann_body  /* Sugar */
     { fun c x at ->
       let t = inline_type c (fst $1) at in
       [{(snd $1 (enter_func c)) with ftype = t} @@ at], [], [] }
@@ -419,33 +423,46 @@ func_fields :
       let fns, ims, exs = $2 c x at in fns, ims, $1 (FuncExport x) c :: exs }
 
 func_fields_import :  /* Sugar */
+  | func_fields_import_param { $1 }
+  | LPAR TAIL_CALL RPAR func_fields_import_param
+    { let FuncType (_, ins, out) = $4 in FuncType (TailCallFuncAnnotation, ins, out) }
+
+func_fields_import_param :  /* Sugar */
   | func_fields_import_result { $1 }
-  | LPAR PARAM value_type_list RPAR func_fields_import
-    { let FuncType (ins, out) = $5 in FuncType ($3 @ ins, out) }
-  | LPAR PARAM bind_var VALUE_TYPE RPAR func_fields_import  /* Sugar */
-    { let FuncType (ins, out) = $6 in FuncType ($4 :: ins, out) }
+  | LPAR PARAM value_type_list RPAR func_fields_import_param
+    { let FuncType (ann, ins, out) = $5 in FuncType (ann, $3 @ ins, out) }
+  | LPAR PARAM bind_var VALUE_TYPE RPAR func_fields_import_param  /* Sugar */
+    { let FuncType (ann, ins, out) = $6 in FuncType (ann, $4 :: ins, out) }
 
 func_fields_import_result :  /* Sugar */
-  | /* empty */ { FuncType ([], []) }
+  | /* empty */ { FuncType (RegularFuncAnnotation, [], []) }
   | LPAR RESULT value_type_list RPAR func_fields_import_result
-    { let FuncType (ins, out) = $5 in FuncType (ins, $3 @ out) }
+    { let FuncType (ann, ins, out) = $5 in FuncType (ann, ins, $3 @ out) }
+
+func_ann_body :
+  | func_fields_body { $1 }
+  | LPAR TAIL_CALL RPAR func_ann_body
+    { let FuncType (_, ins, out) = fst $4 in
+      FuncType (TailCallFuncAnnotation, ins, out),
+      fun c -> snd $4 c
+    }
 
 func_fields_body :
   | func_result_body { $1 }
   | LPAR PARAM value_type_list RPAR func_fields_body
-    { let FuncType (ins, out) = fst $5 in
-      FuncType ($3 @ ins, out),
+    { let FuncType (ann, ins, out) = fst $5 in
+      FuncType (ann, $3 @ ins, out),
       fun c -> ignore (anon_locals c $3); snd $5 c }
   | LPAR PARAM bind_var VALUE_TYPE RPAR func_fields_body  /* Sugar */
-    { let FuncType (ins, out) = fst $6 in
-      FuncType ($4 :: ins, out),
+    { let FuncType (ann, ins, out) = fst $6 in
+      FuncType (ann, $4 :: ins, out),
       fun c -> ignore (bind_local c $3); snd $6 c }
 
 func_result_body :
-  | func_body { FuncType ([], []), $1 }
+  | func_body { FuncType (RegularFuncAnnotation, [], []), $1 }
   | LPAR RESULT value_type_list RPAR func_result_body
-    { let FuncType (ins, out) = fst $5 in
-      FuncType (ins, $3 @ out), snd $5 }
+    { let FuncType (ann, ins, out) = fst $5 in
+      FuncType (ann, ins, $3 @ out), snd $5 }
 
 func_body :
   | instr_list

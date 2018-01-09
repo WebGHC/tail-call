@@ -320,6 +320,7 @@ rule token = parse
   | "type" { TYPE }
   | "func" { FUNC }
   | "start" { START }
+  | "tail_call" { TAIL_CALL }
   | "param" { PARAM }
   | "result" { RESULT }
   | "local" { LOCAL }

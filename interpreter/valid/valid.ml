@@ -214,21 +214,23 @@ let rec check_instr (c : context) (e : instr) (s : infer_stack_type) : op_type =
     c.results -->... []
 
   | Call x ->
-    let FuncType (ins, out) = func c x in
+    let FuncType (_, ins, out) = func c x in
     ins --> out
 
   | CallIndirect x ->
     ignore (table c (0l @@ e.at));
-    let FuncType (ins, out) = type_ c x in
+    let FuncType (_, ins, out) = type_ c x in
     (ins @ [I32Type]) --> out
 
   | ReturnCall x ->
-    let FuncType (ins, out) = func c x in
+    let FuncType (ann, ins, out) = func c x in
+    require (ann == TailCallFuncAnnotation) e.at "function must be marked as tail callable";
     ins -->... out
 
   | ReturnCallIndirect x ->
     ignore (table c (0l @@ e.at));
-    let FuncType (ins, out) = type_ c x in
+    let FuncType (ann, ins, out) = type_ c x in
+    require (ann == TailCallFuncAnnotation) e.at "function must be marked as tail callable";
     (ins @ [I32Type]) -->... out
 
   | Drop ->
@@ -330,12 +332,12 @@ and check_block (c : context) (es : instr list) (ts : stack_type) at =
  *)
 
 let check_type (t : type_) =
-  let FuncType (ins, out) = t.it in
+  let FuncType (_, ins, out) = t.it in
   check_arity (List.length out) t.at
 
 let check_func (c : context) (f : func) =
   let {ftype; locals; body} = f.it in
-  let FuncType (ins, out) = type_ c ftype in
+  let FuncType (_, ins, out) = type_ c ftype in
   let c' = {c with locals = ins @ locals; results = out; labels = [out]} in
   check_block c' body out f.at
 
@@ -403,7 +405,7 @@ let check_global (c : context) (glob : global) =
 
 let check_start (c : context) (start : var option) =
   Lib.Option.app (fun x ->
-    require (func c x = FuncType ([], [])) x.at
+    require (func c x = FuncType (RegularFuncAnnotation, [], [])) x.at
       "start function must not have parameters or results"
   ) start
 

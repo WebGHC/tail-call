@@ -320,7 +320,7 @@ let rec step (inst : instance) (c : config) : config =
       Exhaustion.error e.at "call stack exhausted"
 
     | Invoke clos, vs ->
-      let FuncType (ins, out) = func_type_of clos in
+      let FuncType (_, ins, out) = func_type_of clos in
       let n = List.length ins in
       let args, vs' = take n vs e.at, drop n vs e.at in
       (match clos with
@@ -338,7 +338,8 @@ let rec step (inst : instance) (c : config) : config =
       Exhaustion.error e.at "call stack exhausted"
 
     | InvokeTail clos, vs ->
-      let FuncType (ins, out) = func_type_of clos in
+      let FuncType (_, ins, out) = func_type_of clos in
+      (* We could crash here, but the validation should have already caught it*)
       let n = List.length ins in
       let args, vs' = take n vs e.at, drop n vs e.at in
       (match clos with
@@ -370,7 +371,7 @@ let rec eval (inst : instance) (c : config) : value stack =
 
 let invoke (clos : closure) (vs : value list) : value list =
   let at = match clos with AstFunc (_, f) -> f.at | HostFunc _ -> no_region in
-  let FuncType (ins, out) = func_type_of clos in
+  let FuncType (_, ins, out) = func_type_of clos in
   if List.length vs <> List.length ins then
     Crash.error at "wrong number of arguments";
   let inst = instance (empty_module @@ at) in

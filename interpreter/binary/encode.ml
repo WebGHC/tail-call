@@ -107,7 +107,8 @@ let encode m =
           "cannot encode stack type with arity > 1 (yet)"
 
     let func_type = function
-      | FuncType (ins, out) -> vs7 (-0x20); vec value_type ins; vec value_type out
+      | FuncType (RegularFuncAnnotation, ins, out) -> vs7 (-0x20); vec value_type ins; vec value_type out
+      | FuncType (TailCallFuncAnnotation, ins, out) -> vs7 (-0x21); vec value_type ins; vec value_type out
 
     let limits vu {min; max} =
       bool (max <> None); vu min; opt vu max

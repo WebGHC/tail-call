@@ -63,8 +63,10 @@ let decls kind ts = tab kind (atom value_type) ts
 
 let stack_type ts = decls "result" ts
 
-let func_type (FuncType (ins, out)) =
-  Node ("func", decls "param" ins @ decls "result" out)
+let func_type (FuncType (ann, ins, out)) =
+  match ann with
+    | RegularFuncAnnotation -> Node ("func", decls "param" ins @ decls "result" out)
+    | TailCallFuncAnnotation -> Node ("func", (Atom "tail_call") :: decls "param" ins @ decls "result" out)
 
 let struct_type = func_type
 
