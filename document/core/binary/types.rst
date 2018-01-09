@@ -56,13 +56,15 @@ The only :ref:`result types <syntax-resulttype>` occurring in the binary format 
 Function Types
 ~~~~~~~~~~~~~~
 
-:ref:`Function types <syntax-functype>` are encoded by the byte :math:`\hex{60}` followed by the respective :ref:`vectors <binary-vec>` of parameter and result types.
+:ref:`Function types <syntax-functype>` are encoded by the byte :math:`\hex{60}` or :math:`\hex{5F}` followed by the respective :ref:`vectors <binary-vec>` of parameter and result types.
 
 .. math::
    \begin{array}{llclll@{\qquad\qquad}l}
    \production{function type} & \Bfunctype &::=&
      \hex{60}~~t_1^\ast{:\,}\Bvec(\Bvaltype)~~t_2^\ast{:\,}\Bvec(\Bvaltype)
-       &\Rightarrow& [t_1^\ast] \to [t_2^\ast] \\
+       &\Rightarrow& (\regularfuncann) [t_1^\ast] \to [t_2^\ast] \\ &&|&
+     \hex{5F}~~t_1^\ast{:\,}\Bvec(\Bvaltype)~~t_2^\ast{:\,}\Bvec(\Bvaltype)
+       &\Rightarrow& (\tailfuncann) [t_1^\ast] \to [t_2^\ast] \\
    \end{array}
 
 

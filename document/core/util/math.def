@@ -134,6 +134,9 @@
 .. |ETMEM| mathdef:: \xref{syntax/types}{syntax-externtype}{\K{mem}}
 .. |ETGLOBAL| mathdef:: \xref{syntax/types}{syntax-externtype}{\K{global}}
 
+.. |funcann| mathdef:: \xref{syntax/types}{syntax-functype}{\X{funcann}}
+.. |regularfuncann| mathdef:: \xref{syntax/types}{syntax-functype}{\K{regular}}
+.. |tailfuncann| mathdef:: \xref{syntax/types}{syntax-functype}{\K{tailcall}}
 
 .. Types, non-terminals
 
@@ -561,6 +564,7 @@
 .. |Telemtype| mathdef:: \xref{text/types}{text-elemtype}{\T{elemtype}}
 .. |Tmemtype| mathdef:: \xref{text/types}{text-memtype}{\T{memtype}}
 .. |Tlimits| mathdef:: \xref{text/types}{text-limits}{\T{limits}}
+.. |Ttailcall| mathdef:: \xref{text/types}{text-functype}{\T{tailcall}}
 .. |Tparam| mathdef:: \xref{text/types}{text-functype}{\T{param}}
 .. |Tresult| mathdef:: \xref{text/types}{text-functype}{\T{result}}
 

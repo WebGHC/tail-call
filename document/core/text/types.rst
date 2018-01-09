@@ -52,7 +52,9 @@ Function Types
    \begin{array}{llclll@{\qquad\qquad}l}
    \production{function type} & \Tfunctype &::=&
      \text{(}~\text{func}~~t_1^\ast{:\,}\Tvec(\Tparam)~~t_2^\ast{:\,}\Tvec(\Tresult)~\text{)}
-       &\Rightarrow& [t_1^\ast] \to [t_2^\ast] \\
+       &\Rightarrow& (\regularfuncann) [t_1^\ast] \to [t_2^\ast] \\ &&|&
+     \text{(}~\text{func}~\text{(tail\_call)}~~t_1^\ast{:\,}\Tvec(\Tparam)~~t_2^\ast{:\,}\Tvec(\Tresult)~\text{)}
+       &\Rightarrow& (\tailfuncann) [t_1^\ast] \to [t_2^\ast] \\
    \production{parameter} & \Tparam &::=&
      \text{(}~\text{param}~~\Tid^?~~t{:}\Tvaltype~\text{)}
        &\Rightarrow& t \\

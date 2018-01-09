@@ -75,8 +75,10 @@ mapping a vector of parameters to a vector of results.
 
 .. math::
    \begin{array}{llll}
+   \production{function annotation} & \funcann &::=&
+     \regularfuncann ~|~ \tailfuncann \\
    \production{function type} & \functype &::=&
-     [\vec(\valtype)] \to [\vec(\valtype)] \\
+     (\funcann) [\vec(\valtype)] \to [\vec(\valtype)] \\
    \end{array}
 
 .. note::

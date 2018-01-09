@@ -128,7 +128,7 @@ In that case, a :ref:`type index <syntax-typeidx>` is automatically inserted:
      \text{(}~\text{type}~~x~\text{)}~~\Tparam^\ast~~\Tresult^\ast \\
    \end{array}
 
-where :math:`x` is the smallest existing :ref:`type index <syntax-typeidx>` whose definition in the current module is the :ref:`function type <syntax-functype>` :math:`[t_1^\ast] \to [t_2^\ast]`.
+where :math:`x` is the smallest existing :ref:`type index <syntax-typeidx>` whose definition in the current module is the :ref:`function type <syntax-functype>` :math:`(\funcann) [t_1^\ast] \to [t_2^\ast]`.
 If no such index exists, then a new :ref:`type definition <text-type>` of the form
 
 .. math::
