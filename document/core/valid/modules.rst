@@ -14,7 +14,7 @@ Furthermore, most definitions are themselves classified with a suitable type.
 Functions
 ~~~~~~~~~
 
-Functions :math:`\func` are classified by :ref:`function types <syntax-functype>` of the form :math:`(\funcann) [t_1^\ast] \to [t_2^?]`.
+Functions :math:`\func` are classified by :ref:`function types <syntax-functype>` of the form :math:`(\funcann)^? [t_1^\ast] \to [t_2^?]`.
 
 
 :math:`\{ \FTYPE~x, \FLOCALS~t^\ast, \FBODY~\expr \}`
@@ -22,7 +22,7 @@ Functions :math:`\func` are classified by :ref:`function types <syntax-functype>
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
-* Let :math:`(ann) [t_1^\ast] \to [t_2^?]` be the :ref:`function type <syntax-functype>` :math:`C.\CTYPES[x]`.
+* Let :math:`(ann)^? [t_1^\ast] \to [t_2^?]` be the :ref:`function type <syntax-functype>` :math:`C.\CTYPES[x]`.
 
 * Let :math:`C'` be the same :ref:`context <context>` as :math:`C`,
   but with:
@@ -36,15 +36,15 @@ Functions :math:`\func` are classified by :ref:`function types <syntax-functype>
 * Under the context :math:`C'`,
   the expression :math:`\expr` must be valid with type :math:`t_2^?`.
 
-* Then the function definition is valid with type :math:`(ann) [t_1^\ast] \to [t_2^?]`.
+* Then the function definition is valid with type :math:`(ann)^? [t_1^\ast] \to [t_2^?]`.
 
 .. math::
    \frac{
-     C.\CTYPES[x] = (ann) [t_1^\ast] \to [t_2^?]
+     C.\CTYPES[x] = (ann)^? [t_1^\ast] \to [t_2^?]
      \qquad
      C,\CLOCALS\,t_1^\ast~t^\ast,\CLABELS~[t_2^?],\CRETURN~[t_2^?] \vdash \expr : [t_2^?]
    }{
-     C \vdash \{ \FTYPE~x, \FLOCALS~t^\ast, \FBODY~\expr \} : (ann) [t_1^\ast] \to [t_2^?]
+     C \vdash \{ \FTYPE~x, \FLOCALS~t^\ast, \FBODY~\expr \} : (ann)^? [t_1^\ast] \to [t_2^?]
    }
 
 .. note::
@@ -368,15 +368,15 @@ Imports :math:`\import` and import descriptions :math:`\importdesc` are classifi
 
 * The function :math:`C.\CTYPES[x]` must be defined in the context.
 
-* Let :math:`(ann) [t_1^\ast] \to [t_2^\ast]` be the :ref:`function type <syntax-functype>` :math:`C.\CTYPES[x]`.
+* Let :math:`(ann)^? [t_1^\ast] \to [t_2^\ast]` be the :ref:`function type <syntax-functype>` :math:`C.\CTYPES[x]`.
 
-* Then the import description is valid with type :math:`\ETFUNC~(ann) [t_1^\ast] \to [t_2^\ast]`.
+* Then the import description is valid with type :math:`\ETFUNC~(ann)^? [t_1^\ast] \to [t_2^\ast]`.
 
 .. math::
    \frac{
-     C.\CTYPES[x] = (ann) [t_1^\ast] \to [t_2^\ast]
+     C.\CTYPES[x] = (ann)^? [t_1^\ast] \to [t_2^\ast]
    }{
-     C \vdash \IDFUNC~x : \ETFUNC~ (ann) [t_1^\ast] \to [t_2^\ast]
+     C \vdash \IDFUNC~x : \ETFUNC~ (ann)^? [t_1^\ast] \to [t_2^\ast]
    }
 
 

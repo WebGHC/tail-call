@@ -15,7 +15,7 @@ Function Types
 
 :ref:`Function types <syntax-functype>` may not specify more than one result.
 
-:math:`(\funcann) [t_1^n] \to [t_2^m]`
+:math:`(\funcann)^? [t_1^n] \to [t_2^m]`
 ...........................
 
 * The arity :math:`m` must not be larger than :math:`1`.
@@ -25,7 +25,7 @@ Function Types
 .. math::
    \frac{
    }{
-     \vdash (\funcann) [t_1^\ast] \to [t_2^?] \ok
+     \vdash (\funcann)^? [t_1^\ast] \to [t_2^?] \ok
    }
 
 .. note::

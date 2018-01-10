@@ -78,8 +78,11 @@ mapping a vector of parameters to a vector of results.
    \production{function annotation} & \funcann &::=&
      \regularfuncann ~|~ \tailfuncann \\
    \production{function type} & \functype &::=&
-     (\funcann) [\vec(\valtype)] \to [\vec(\valtype)] \\
+     (\funcann)^? [\vec(\valtype)] \to [\vec(\valtype)] \\
    \end{array}
+
+.. note::
+   If the annotation is omitted, it defaults to :math:`\regularfuncann`.
 
 .. note::
    In the current version of WebAssembly,
