@@ -39,7 +39,7 @@
     (return_call $fac-tail-aux (get_local $x) (i64.const 1))
   )
 
-  (func $fac-tail-aux (tail_call) (param $x i64) (param $r i64) (result i64)
+  (func $fac-tail-aux tail_call (param $x i64) (param $r i64) (result i64)
     (if (result i64) (i64.eqz (get_local $x))
       (then (return (get_local $r)))
       (else
@@ -63,5 +63,6 @@
 
   (invoke "fac-tail" (i64.const 4))
   (invoke "fac-tail" (i64.const 300))
+
 
 

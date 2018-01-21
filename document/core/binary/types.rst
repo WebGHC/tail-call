@@ -62,9 +62,9 @@ Function Types
    \begin{array}{llclll@{\qquad\qquad}l}
    \production{function type} & \Bfunctype &::=&
      \hex{60}~~t_1^\ast{:\,}\Bvec(\Bvaltype)~~t_2^\ast{:\,}\Bvec(\Bvaltype)
-       &\Rightarrow& (\regularfuncann) [t_1^\ast] \to [t_2^\ast] \\ &&|&
+       &\Rightarrow& \regularfuncann [t_1^\ast] \to [t_2^\ast] \\ &&|&
      \hex{5F}~~t_1^\ast{:\,}\Bvec(\Bvaltype)~~t_2^\ast{:\,}\Bvec(\Bvaltype)
-       &\Rightarrow& (\tailfuncann) [t_1^\ast] \to [t_2^\ast] \\
+       &\Rightarrow& \tailfuncann [t_1^\ast] \to [t_2^\ast] \\
    \end{array}
 
 

@@ -4,7 +4,7 @@
 Instructions
 ------------
 
-:ref:`Instructions <syntax-instr>` are classified by :ref:`function types <syntax-functype>` :math:`(\funcann)^? [t_1^\ast] \to [t_2^\ast]`
+:ref:`Instructions <syntax-instr>` are classified by :ref:`function types <syntax-functype>` :math:`\funcann^? [t_1^\ast] \to [t_2^\ast]`
 that describe how they manipulate the :ref:`operand stack <stack>`.
 The types describe the required input stack with argument values of types :math:`t_1^\ast` that an instruction pops off
 and the provided output stack with result values of types :math:`t_2^\ast` that it pushes back.
@@ -652,9 +652,9 @@ Control Instructions
 
 .. math::
    \frac{
-     C.\CFUNCS[x] = (\funcann)^? [t_1^\ast] \to [t_2^\ast]
+     C.\CFUNCS[x] = \funcann^? [t_1^\ast] \to [t_2^\ast]
    }{
-     C \vdash \CALL~x : (\funcann)^? [t_1^\ast] \to [t_2^\ast]
+     C \vdash \CALL~x : \funcann^? [t_1^\ast] \to [t_2^\ast]
    }
 
 
@@ -677,9 +677,9 @@ Control Instructions
    \frac{
      C.\CTABLES[0] = \limits~\ANYFUNC
      \qquad
-     C.\CTYPES[x] = (\funcann)^? [t_1^\ast] \to [t_2^\ast]
+     C.\CTYPES[x] = \funcann^? [t_1^\ast] \to [t_2^\ast]
    }{
-     C \vdash \CALLINDIRECT~x : (\funcann)^? [t_1^\ast] \to [t_2^\ast]
+     C \vdash \CALLINDIRECT~x : \funcann^? [t_1^\ast] \to [t_2^\ast]
    }
 
 .. _valid-return_call:
@@ -689,13 +689,13 @@ Control Instructions
 
 * The function :math:`C.\CFUNCS[x]` must be defined in the context.
 
-* Let :math:`(\tailfuncann) [t_1^\ast] \to [t_2^\ast]` be the :ref:`function type <syntax-functype>` of :math:`C.\CFUNCS[x]`.
+* Let :math:`\tailfuncann [t_1^\ast] \to [t_2^\ast]` be the :ref:`function type <syntax-functype>` of :math:`C.\CFUNCS[x]`.
 
 * Then the instruction is valid with type :math:`[t_3^\ast~t_1^\ast] \to [t_4^\ast~t_2^\ast]`, for any sequences of :ref:`value types <syntax-valtype>` :math:`t_3^\ast` and :math:`t_4^\ast`.
 
 .. math::
    \frac{
-     C.\CFUNCS[x] = (\tailfuncann) [t_1^\ast] \to [t_2^\ast]
+     C.\CFUNCS[x] = \tailfuncann [t_1^\ast] \to [t_2^\ast]
    }{
      C \vdash \RETURNCALL~x : [t_3^\ast~t_1^\ast] \to [t_4^\ast~t_2^\ast]
    }
@@ -716,7 +716,7 @@ Control Instructions
 
 * The type :math:`C.\CTYPES[x]` must be defined in the context.
 
-* Let :math:`(\tailfuncann) [t_1^\ast] \to [t_2^\ast]` be the :ref:`function type <syntax-functype>` of :math:`C.\CTYPES[x]`.
+* Let :math:`\tailfuncann [t_1^\ast] \to [t_2^\ast]` be the :ref:`function type <syntax-functype>` of :math:`C.\CTYPES[x]`.
 
 * Then the instruction is valid with type :math:`[t_3^\ast~t_1^\ast] \to [t_4^\ast~t_2^\ast]`, for any sequences of :ref:`value types <syntax-valtype>` :math:`t_3^\ast` and :math:`t_4^\ast`.
 
@@ -724,7 +724,7 @@ Control Instructions
    \frac{
      C.\CTABLES[0] = \limits~\ANYFUNC
      \qquad
-     C.\CTYPES[x] = (\tailfuncann) [t_1^\ast] \to [t_2^\ast]
+     C.\CTYPES[x] = \tailfuncann [t_1^\ast] \to [t_2^\ast]
    }{
      C \vdash \RETURNCALLINDIRECT~x : [t_3^\ast~t_1^\ast] \to [t_4^\ast~t_2^\ast]
    }

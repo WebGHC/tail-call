@@ -219,15 +219,19 @@ func_sig :
     { FuncType (RegularFuncAnnotation, [], []) }
   | LPAR RESULT value_type_list RPAR func_sig
     { let FuncType (ann, ins, out) = $5 in
+      if ann <> RegularFuncAnnotation then error (at ()) "result before tail_call";
       if ins <> [] then error (at ()) "result before parameter";
       FuncType (ann, ins, $3 @ out) }
   | LPAR PARAM value_type_list RPAR func_sig
-    { let FuncType (ann, ins, out) = $5 in FuncType (ann, $3 @ ins, out) }
+    { let FuncType (ann, ins, out) = $5 in 
+      if ann <> RegularFuncAnnotation then error (at ()) "result before tail_call";
+      FuncType (ann, $3 @ ins, out) }
   | LPAR PARAM bind_var VALUE_TYPE RPAR func_sig  /* Sugar */
-    { let FuncType (ann, ins, out) = $6 in FuncType (ann, $4 :: ins, out) }
-  | LPAR TAIL_CALL RPAR func_sig
-    { let FuncType (_, ins, out) = $4 in
-      if ins <> [] then error (at ()) "parameter before tail-call";
+    { let FuncType (ann, ins, out) = $6 in 
+      if ann <> RegularFuncAnnotation then error (at ()) "result before tail_call";
+      FuncType (ann, $4 :: ins, out) }
+  | TAIL_CALL func_sig
+    { let FuncType (_, ins, out) = $2 in
       FuncType (TailCallFuncAnnotation, ins, out) }
 
 table_sig :
@@ -424,8 +428,8 @@ func_fields :
 
 func_fields_import :  /* Sugar */
   | func_fields_import_param { $1 }
-  | LPAR TAIL_CALL RPAR func_fields_import_param
-    { let FuncType (_, ins, out) = $4 in FuncType (TailCallFuncAnnotation, ins, out) }
+  | TAIL_CALL func_fields_import_param
+    { let FuncType (_, ins, out) = $2 in FuncType (TailCallFuncAnnotation, ins, out) }
 
 func_fields_import_param :  /* Sugar */
   | func_fields_import_result { $1 }
@@ -441,10 +445,10 @@ func_fields_import_result :  /* Sugar */
 
 func_ann_body :
   | func_fields_body { $1 }
-  | LPAR TAIL_CALL RPAR func_ann_body
-    { let FuncType (_, ins, out) = fst $4 in
+  | TAIL_CALL func_ann_body
+    { let FuncType (_, ins, out) = fst $2 in
       FuncType (TailCallFuncAnnotation, ins, out),
-      fun c -> snd $4 c
+      fun c -> snd $2 c
     }
 
 func_fields_body :
