@@ -83,6 +83,8 @@ The same label identifier may optionally be repeated after the corresponding :ma
 .. _text-return:
 .. _text-call:
 .. _text-call_indirect:
+.. _text-return_call:
+.. _text-return_call_indirect:
 
 All other control instruction are represented verbatim.
 
@@ -97,12 +99,15 @@ All other control instruction are represented verbatim.
        &\Rightarrow& \BRTABLE~l^\ast~l_N \\ &&|&
      \text{return} &\Rightarrow& \RETURN \\ &&|&
      \text{call}~~x{:}\Tfuncidx_I &\Rightarrow& \CALL~x \\ &&|&
-     \text{call\_indirect}~~x,I'{:}\Ttypeuse_I &\Rightarrow& \CALLINDIRECT~x
        & (\iff I' = \{\}) \\
+     \text{call\_indirect}~~x{:}\Ttypeidx_I &\Rightarrow& \CALLINDIRECT~x \\ &&|&
+     \text{return\_call}~~x{:}\Tfuncidx_I &\Rightarrow& \RETURNCALL~x \\ &&|&
+       & (\iff I' = \{\}) \\
+     \text{return\_call\_indirect}~~x{:}\Ttypeidx_I &\Rightarrow& \RETURNCALLINDIRECT~x \\ 
    \end{array}
 
 .. note::
-   The side condition stating that the :ref:`identifier context <text-context>` :math:`I'` must be empty in the rule for |CALLINDIRECT| enforces that no identifier can be bound in any |Tparam| declaration appearing in the type annotation.
+   The side condition stating that the :ref:`identifier context <text-context>` :math:`I'` must be empty in the rules for |CALLINDIRECT| and |RETURNCALLINDIRECT| enforces that no identifier can be bound in any |Tparam| declaration appearing in the type annotation.
 
 
 Abbreviations

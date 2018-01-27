@@ -235,6 +235,8 @@ let rec instr e =
     | Return -> "return", []
     | Call x -> "call " ^ var x, []
     | CallIndirect x -> "call_indirect", [Node ("type " ^ var x, [])]
+    | ReturnCall x -> "return_call " ^ var x, []
+    | ReturnCallIndirect x -> "return_call_indirect", [Node ("type " ^ var x, [])]
     | Drop -> "drop", []
     | Select -> "select", []
     | GetLocal x -> "get_local " ^ var x, []

@@ -279,6 +279,8 @@ Both instructions operate in units of :ref:`page size <page-size>`.
 .. _syntax-return:
 .. _syntax-call:
 .. _syntax-call_indirect:
+.. _syntax-return_call:
+.. _syntax-return_call_indirect:
 .. _syntax-instr-seq:
 .. _syntax-instr-control:
 
@@ -301,7 +303,9 @@ Instructions in this group affect the flow of control.
      \BRTABLE~\vec(\labelidx)~\labelidx \\&&|&
      \RETURN \\&&|&
      \CALL~\funcidx \\&&|&
-     \CALLINDIRECT~\typeidx \\
+     \CALLINDIRECT~\typeidx \\ &&|&
+     \RETURNCALL~\funcidx \\&&|&
+     \RETURNCALLINDIRECT~\typeidx \\
    \end{array}
 
 The |NOP| instruction does nothing.
@@ -349,6 +353,7 @@ the callee is dynamically checked against the :ref:`function type <syntax-functy
    |CALLINDIRECT| implicitly operates on :ref:`table <syntax-table>` :ref:`index <syntax-tableidx>` :math:`0`.
    This restriction may be lifted in future versions.
 
+The |RETURNCALL| and |RETURNCALLINDIRECT| instructions are variants of the |CALL| and |CALLINDIRECT| instructions that used to call functions in the tail-call position.
 
 .. index:: ! expression, constant, global, offset, element, data, instruction
    pair: abstract syntax; expression

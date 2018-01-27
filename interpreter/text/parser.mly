@@ -147,7 +147,7 @@ let inline_type_explicit (c : context) x ft at =
 
 %token NAT INT FLOAT STRING VAR VALUE_TYPE ANYFUNC MUT LPAR RPAR
 %token NOP DROP BLOCK END IF THEN ELSE SELECT LOOP BR BR_IF BR_TABLE
-%token CALL CALL_INDIRECT RETURN
+%token CALL CALL_INDIRECT RETURN RETURN_CALL RETURN_CALL_INDIRECT
 %token GET_LOCAL SET_LOCAL TEE_LOCAL GET_GLOBAL SET_GLOBAL
 %token LOAD STORE OFFSET_EQ_NAT ALIGN_EQ_NAT
 %token CONST UNARY BINARY TEST COMPARE CONVERT
@@ -308,6 +308,7 @@ plain_instr :
       br_table xs x }
   | RETURN { fun c -> return }
   | CALL var { fun c -> call ($2 c func) }
+  | RETURN_CALL var { fun c -> return_call ($2 c func) }
   | DROP { fun c -> drop }
   | SELECT { fun c -> select }
   | GET_LOCAL var { fun c -> get_local ($2 c local) }
@@ -330,6 +331,9 @@ call_instr :
   | CALL_INDIRECT call_instr_sig
     { let at1 = ati 1 in
       fun c -> let x, es = $2 c in call_indirect x @@ at1, es }
+  | RETURN_CALL_INDIRECT call_instr_sig
+    { let at1 = ati 1 in
+      fun c -> let x, es = $2 c in return_call_indirect x @@ at1, es }
 
 call_instr_sig :
   | type_use call_instr_params

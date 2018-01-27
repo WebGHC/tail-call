@@ -80,6 +80,8 @@ and instr' =
   | Return                            (* break from function body *)
   | Call of var                       (* call function *)
   | CallIndirect of var               (* call function through table *)
+  | ReturnCall of var                 (* tail-recursive call function *)
+  | ReturnCallIndirect of var         (* tail-recursive call function through table *)
   | Drop                              (* forget a value *)
   | Select                            (* branchless conditional *)
   | GetLocal of var                   (* read local variable *)

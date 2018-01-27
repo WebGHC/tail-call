@@ -310,6 +310,8 @@
 .. |RETURN| mathdef:: \xref{syntax/instructions}{syntax-instr-control}{\K{return}}
 .. |CALL| mathdef:: \xref{syntax/instructions}{syntax-instr-control}{\K{call}}
 .. |CALLINDIRECT| mathdef:: \xref{syntax/instructions}{syntax-instr-control}{\K{call\_indirect}}
+.. |RETURNCALL| mathdef:: \xref{syntax/instructions}{syntax-instr-control}{\K{return\_call}}
+.. |RETURNCALLINDIRECT| mathdef:: \xref{syntax/instructions}{syntax-instr-control}{\K{return\_call\_indirect}}
 
 .. |DROP| mathdef:: \xref{syntax/instructions}{syntax-instr-parametric}{\K{drop}}
 .. |SELECT| mathdef:: \xref{syntax/instructions}{syntax-instr-parametric}{\K{select}}
